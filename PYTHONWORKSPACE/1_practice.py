@@ -1,4 +1,4 @@
-'''
+
 # 숫자 자료형
 print(5)
 print(-10)
@@ -293,4 +293,4 @@ mix_list = ["조세호", 20, True]
 
 num_list.extend(mix_list)
 print(num_list)
-'''
+
