@@ -163,7 +163,7 @@ print(score_file.readline(), end="") # , end="" 줄바꿈싫어서 써줌
 print(score_file.readline(), end="")
 print(score_file.readline(), end="")
 score_file.close()
-''' 
+
 #파일의 줄이 엄청 길때. while 반복문으로 읽어온다
 score_file = open("score.txt", "r", encoding="utf8") # "r"은 파일 읽어오기
 while True:
@@ -172,3 +172,45 @@ while True:
         break
     print(line, end="")
 score_file.close()
+
+score_file = open("score.txt", "r", encoding="utf8") # "r"은 파일 읽어오기
+lines = score_file.readlines() #list 형태로 저장
+for line in lines:
+    print(line, end="")
+score_file.close()
+
+#pickle : 데이터를 파일 형태로 저장해주는것
+import pickle
+profile_file = open("profile.pickle", "wb") #"w"쓰기목적, "b"바이너리?타입 정의함! pickle은 인코딩 필요없음
+profile = {"이름":"박명수", "나이":30, "취미":["축구", "골프", "코딩"]}
+print(profile)
+pickle.dump(profile, profile_file)  #profile에 있는 정보를 file에 저장
+profile_file.close()
+
+import pickle
+profile_file = open("profile.pickle", "rb") #"r"읽어오기
+profile = pickle.load(profile_file) #file에 있는 정보를 profile에 불러오기
+print(profile)
+profile_file.close()
+
+# with
+import pickle
+with open("profile.pickle", "rb") as profile_file: #파일을열고 profile_file 변수에저장
+    print(pickle.load(profile_file))
+# close 할 필요없다. 쉽네
+
+#파일쓰기(2줄로 간단함)
+with open("study.txt", "w", encoding="utf8") as study_file: #study.txt파일을만들고, study_file 변수에 저장
+    study_file.write("파이썬을 열심히 공부하고 있어요") #study_file에다가 글쓴다
+#파일읽기(2줄로 간단함)
+with open("study.txt", "r", encoding="utf8") as study_file: #study파일 study_file로 읽어오기
+    print(study_file.read())
+
+#퀴즈, n주차 보고서 파일쓰기
+for i in range(10, 21):
+    with open(str(i)+"주차.txt", "w", encoding="utf8") as report_file:
+        report_file.write("- {0} 주차 주간보고 -".format(i))
+        report_file.write("\n부서 : ")
+        report_file.write("\n이름 : ")
+        report_file.write("\n업무 요약 : ")
+'''
