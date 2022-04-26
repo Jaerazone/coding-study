@@ -1,11 +1,33 @@
 const express = require('express');
 const app = express();
-
 app.use(express.urlencoded({extended: true})) 
 
-app.listen(8080, function() {
-    console.log('listening on 8080')
+const MongoClient = require('mongodb').MongoClient;
+
+app.set('view engine', 'ejs');
+
+// app.listen(8080, function() {
+//     console.log('listening on 8080')
+// })
+var db;
+MongoClient.connect('mongodb+srv://admin:qwer1234@cluster0.n4mld.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', function(에러, client) {
+
+    //연결되면 할일
+    if(에러) return console.log(에러);
+    db = client.db('todoapp'); // todoapp이라는 database(폴더)에 연결좀요~
+
+    db.collection('post').insertOne({이름 : 'John', _id : 100 }, function(에러, 결과) {
+        console.log('저장완료');
+    }); // 내가 원하는 데이터 저장할수있음
+
+    // mongoclient 접속이 완료되면, 아래 app.listen 포트8080 실행해주세요~
+    app.listen(8080, function() {
+        console.log('listening on 8080')
+    })
 })
+
+
+
 // 누군가가 /pet으로 방문하면..
 // pet관련된 안내문을 띄워주자
 
@@ -33,16 +55,20 @@ app.post('/add', function(요청,응답) {
     console.log(요청.body);
     console.log(요청.body.title);
     console.log(요청.body.date);
-}) // 이때 우리가 input에 적은 작성한 할일, 날짜는 '요청' 안에 저장되어있다
-    // '요청'에 저장된정보를 쉽게 꺼내쓰려면 라이브러리 필요함
-    // body-parser라이브러리가 이미 express에 기본 포함이라서
-    // npm으로 따로 설치할 필요가 없다 
-    // app.use(express.urlencoded({extended: true})) 
-    // 이거만 맨위에 적어주면된다
-    // body-parser은 html의 body안에 있는 데이터 (input같은놈들) 해석할수있게 도와준다
+    db.collection('post').insertOne({제목 : 요청.body.title, 날짜 : 요청.body.date }, function(에러, 결과) {
+        console.log('저장완료');
+    });
+}) 
 
-    //post요청으로 서버에 데이터를 전송하고싶으면
-    // 1) app.use(express.urlencoded({extended: true})) 
-    // 2) form데이터의 경우 input들에 name="" 쓰기  (input이 많을경우를 대비해 각자이름을새김)
-    // 3) console.log(요청.body.~~) 콘솔로 확인하기
-    // 4) 이제 이 데이터들을 영구적으로 저장해보자! DB에 저장해주세요~
+// 몽고DB에 저장한 데이터들을   /list경로에 GET 요청으로 접속하면
+// 실제 DB에 저장된 데이터들로 예쁘게 꾸며진 HTML 보여줌
+app.get('/list', function(요청, 응답) {
+    // 디비에 저장된 post라는 collection안의 제목이뭐인? id가 뭐인? 데이터를 꺼내주세요
+    db.collection('post').find().toArray( function(에러, 결과) { // .find().toArray() 임마 다가져와~ 세트로씀
+        console.log(결과);
+        응답.render('list.ejs', {posts: 결과});
+    }) 
+
+    
+})
+
